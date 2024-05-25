@@ -46,7 +46,7 @@ public class Principal {
 
     public void mostrarMenu(){
         System.out.println("""
-                Selecciones una opción             
+                Seleccione una opción:             
                 1- buscar libro por titulo
                 2- Listar libros registrados
                 
