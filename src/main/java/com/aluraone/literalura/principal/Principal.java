@@ -1,8 +1,7 @@
 package com.aluraone.literalura.principal;
 
-import com.aluraone.literalura.model.Datos;
-import com.aluraone.literalura.model.DatosLibros;
-import com.aluraone.literalura.model.Libro;
+import com.aluraone.literalura.model.*;
+import com.aluraone.literalura.repository.AutorRepository;
 import com.aluraone.literalura.repository.LibroRepository;
 import com.aluraone.literalura.service.ConsumoAPI;
 import com.aluraone.literalura.service.ConvierteDatos;
@@ -15,11 +14,13 @@ public class Principal {
     private ConvierteDatos conversor = new ConvierteDatos();
     private ConsumoAPI consulta = new ConsumoAPI();
     private int opcionUsuario = -1;
-    private LibroRepository repository;
+    private LibroRepository libroRepository;
+    private AutorRepository autorRepository;
     Scanner teclado = new Scanner(System.in);
 
-    public Principal(LibroRepository repository) {
-        this.repository = repository;
+    public Principal(LibroRepository libroRepository, AutorRepository autorRepository) {
+        this.libroRepository = libroRepository;
+        this.autorRepository = autorRepository;
     }
 
     public void consultaEjemplo(){
@@ -64,9 +65,22 @@ public class Principal {
         var datos = conversor.obtenerDatos(json, Datos.class);
         DatosLibros datoslibro = datos.resultados().get(0);
         Libro libro = new Libro(datoslibro);
+        Autor autor = new Autor().obtenerPrimerAutor(datoslibro);
         System.out.println(libro);
-        repository.save(libro);
+        guardarLibroConAutor(libro, autor);
     }
+
+    private void guardarLibroConAutor(Libro libro, Autor autor){
+        if (autor.getId() == null) {
+            autorRepository.save(autor);
+        }
+
+        libro.setAutor(autor);
+        libroRepository.save(libro);
+    }
+    //buscar autores en vase de datos por nombre
+
+
 
 
 }

@@ -15,8 +15,9 @@ public class Libro {
     @Column(unique = true)
     private String titulo;
 
-    @Transient
+    @ManyToOne()
     private Autor autor;
+
     private String nombreAutor;
     private List<String> idiomas;
     private Double numeroDeDescargas;
@@ -26,7 +27,6 @@ public class Libro {
 
     public Libro(DatosLibros datosLibros) {
         this.titulo = datosLibros.titulo();
-        this.autor = obtenerPrimerAutor(datosLibros);
         this.nombreAutor = obtenerPrimerAutor(datosLibros).getNombre();
         this.idiomas = datosLibros.idiomas();
         this.numeroDeDescargas = datosLibros.numeroDeDescargas();
@@ -82,8 +82,8 @@ public class Libro {
     public void setAutor(Autor autor) {
         this.autor = autor;
     }
-    //metodos
 
+    //metodos
     public Autor obtenerPrimerAutor(DatosLibros datosLibro){
         DatosAutor datosAutor = datosLibro.autor().get(0);
         return new Autor(datosAutor);
@@ -93,7 +93,7 @@ public class Libro {
     public String toString(){
         return
                 "Titulo = " + titulo + "\'" +
-                        ", Autor =" + autor +
+                        ", Autor =" + nombreAutor +
                         ", Idiomas =" + idiomas+
                         ", Numero de descargas= " + numeroDeDescargas
                 ;
