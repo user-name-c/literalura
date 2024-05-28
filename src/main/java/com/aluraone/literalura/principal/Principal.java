@@ -6,6 +6,7 @@ import com.aluraone.literalura.repository.LibroRepository;
 import com.aluraone.literalura.service.ConsumoAPI;
 import com.aluraone.literalura.service.ConvierteDatos;
 
+import java.util.Optional;
 import java.util.Scanner;
 
 
@@ -71,12 +72,21 @@ public class Principal {
     }
 
     private void guardarLibroConAutor(Libro libro, Autor autor){
-        if (autor.getId() == null) {
+        Optional<Autor> autorBuscado = autorRepository.findByNombreContains(autor.getNombre());
+        if(autorBuscado.isPresent()){
+            System.out.println("El autor ya existe");
+            libro.setAutor(autorBuscado.get());
+        } else {
+            System.out.println("Nuevo autor");
             autorRepository.save(autor);
+            libro.setAutor(autor);
         }
-
-        libro.setAutor(autor);
-        libroRepository.save(libro);
+        try {
+            libroRepository.save(libro);
+        } catch (Exception e) {
+            // Manejar otras excepciones
+            System.out.println("Ocurrió un error al guardar el libro: " + e.getMessage());
+        }
     }
     //buscar autores en vase de datos por nombre
 
