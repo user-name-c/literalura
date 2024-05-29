@@ -75,13 +75,16 @@ public class Principal {
     private void buscarLibroWeb(){
         System.out.println("Ingrese el nombre del libro que desea buscar");
         String libroUsuario = teclado.nextLine();
+
         String busqueda = "?search=" + libroUsuario.replace(" ","+");
         var json = consulta.obtenerDatos(URL_BASE + busqueda);
 //        System.out.println(json);
         var datos = conversor.obtenerDatos(json, Datos.class);
+
         DatosLibros datoslibro = datos.resultados().get(0);
         Libro libro = new Libro(datoslibro);
         Autor autor = new Autor().obtenerPrimerAutor(datoslibro);
+
         System.out.println(libro);
         guardarLibroConAutor(libro, autor);
     }
@@ -89,6 +92,8 @@ public class Principal {
     private void guardarLibroConAutor(Libro libro, Autor autor){
         //buscar autores en vase de datos por nombre
         Optional<Autor> autorBuscado = autorRepository.findByNombreContains(autor.getNombre());
+
+        //guarda el autor si no existe
         if(autorBuscado.isPresent()){
             System.out.println("El autor ya existe");
             libro.setAutor(autorBuscado.get());
@@ -97,6 +102,8 @@ public class Principal {
             autorRepository.save(autor);
             libro.setAutor(autor);
         }
+
+        //guarda el libro
         try {
             libroRepository.save(libro);
         } catch (Exception e) {
@@ -122,7 +129,7 @@ public class Principal {
         //Aqui se consulta nuestra base de datos postreSql
         autores = autorRepository.findAll();
 
-        //imprimia las series guardadas en la lista series
+        //imprimia las series guardadas en la lista autores
         imprimeAutoresOrdenadosPorNombre(autores);
     }
 
@@ -130,9 +137,11 @@ public class Principal {
     private void mostrarAutoresPorAnio(){
         System.out.println("De que año deseas ver autores");
         Integer anio = Integer.valueOf(teclado.nextLine());
+
         autores = autorRepository
                 .findByFechaDeNacimientoLessThanEqualAndFechaDeMuerteGreaterThanEqual
                         (anio, anio);
+
         if (autores.isEmpty()) {
             System.out.println("No se encontraron autores vivos en ese año");
         } else {
