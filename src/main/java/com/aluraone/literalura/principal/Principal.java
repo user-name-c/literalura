@@ -6,8 +6,10 @@ import com.aluraone.literalura.repository.LibroRepository;
 import com.aluraone.literalura.service.ConsumoAPI;
 import com.aluraone.literalura.service.ConvierteDatos;
 
+import java.util.Comparator;
 import java.util.Optional;
 import java.util.Scanner;
+import java.util.List;
 
 
 public class Principal {
@@ -17,6 +19,7 @@ public class Principal {
     private int opcionUsuario = -1;
     private LibroRepository libroRepository;
     private AutorRepository autorRepository;
+    List<Autor> autores;
     Scanner teclado = new Scanner(System.in);
 
     public Principal(LibroRepository libroRepository, AutorRepository autorRepository) {
@@ -34,7 +37,16 @@ public class Principal {
                    buscarLibroWeb();
                     break;
                 case 2:
-                    System.out.println( "Opcion aun no implementada");
+                    mostrarLibrosBuscados();
+                    break;
+                case 3:
+                    mostrarAutoresBuscados();
+                    break;
+                case 4:
+                    mostrarAutoresPorAnio();
+                    break;
+                case 5:
+                    System.out.println("Opcion aun no implementada");
                     break;
                 case 0:
                     System.out.println("Finalizando el programa");
@@ -52,7 +64,10 @@ public class Principal {
                 Seleccione una opción:             
                 1- buscar libro por titulo
                 2- Listar libros registrados
-                
+                3- Listar autores registrados
+                4- Listar autores vivos en un determinado año
+                5- listar libros por idioma
+                    
                 0- Salir
                 """);
     }
@@ -72,6 +87,7 @@ public class Principal {
     }
 
     private void guardarLibroConAutor(Libro libro, Autor autor){
+        //buscar autores en vase de datos por nombre
         Optional<Autor> autorBuscado = autorRepository.findByNombreContains(autor.getNombre());
         if(autorBuscado.isPresent()){
             System.out.println("El autor ya existe");
@@ -88,9 +104,46 @@ public class Principal {
             System.out.println("Ocurrió un error al guardar el libro: " + e.getMessage());
         }
     }
-    //buscar autores en vase de datos por nombre
 
 
+    // listar autores buscados
+    private void mostrarLibrosBuscados() {
+        //Aqui se consulta nuestra base de datos postreSql
+        List<Libro> libros = libroRepository.findAll();
 
+        //imprimia las series guardadas en la lista series
+        libros.stream()
+                .sorted(Comparator.comparing(Libro::getNombreAutor))
+                .forEach(System.out::println);
+    }
+
+
+    private void mostrarAutoresBuscados() {
+        //Aqui se consulta nuestra base de datos postreSql
+        autores = autorRepository.findAll();
+
+        //imprimia las series guardadas en la lista series
+        imprimeAutoresOrdenadosPorNombre(autores);
+    }
+
+    //llistar autores vivos en un determinado año
+    private void mostrarAutoresPorAnio(){
+        System.out.println("De que año deseas ver autores");
+        Integer anio = Integer.valueOf(teclado.nextLine());
+        autores = autorRepository
+                .findByFechaDeNacimientoLessThanEqualAndFechaDeMuerteGreaterThanEqual
+                        (anio, anio);
+        if (autores.isEmpty()) {
+            System.out.println("No se encontraron autores vivos en ese año");
+        } else {
+            imprimeAutoresOrdenadosPorNombre(autores);
+        }
+    }
+
+    private void imprimeAutoresOrdenadosPorNombre(List<Autor> autores){
+        autores.stream()
+                .sorted(Comparator.comparing(Autor::getNombre))
+                .forEach(System.out::println);
+    }
 
 }
