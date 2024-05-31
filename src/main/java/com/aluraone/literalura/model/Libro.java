@@ -19,7 +19,7 @@ public class Libro {
     private Autor autor;
 
     private String nombreAutor;
-    private List<String> idiomas;
+    private String idiomas;
     private Double numeroDeDescargas;
 
     public Libro() {
@@ -28,7 +28,7 @@ public class Libro {
     public Libro(DatosLibros datosLibros) {
         this.titulo = datosLibros.titulo();
         this.nombreAutor = obtenerPrimerAutor(datosLibros).getNombre();
-        this.idiomas = datosLibros.idiomas();
+        this.idiomas = obtenerPrimerIdioma(datosLibros);
         this.numeroDeDescargas = datosLibros.numeroDeDescargas();
     }
 
@@ -59,13 +59,13 @@ public class Libro {
         this.nombreAutor = nombreAutor;
     }
 
-    public List<String> getIdiomas() {
+    public String getIdiomas() {
         return idiomas;
     }
 
-    public void setIdiomas(List<String> idiomas) {
+   public void setIdiomas(String idiomas){
         this.idiomas = idiomas;
-    }
+   }
 
     public Double getNumeroDeDescargas() {
         return numeroDeDescargas;
@@ -89,13 +89,18 @@ public class Libro {
         return new Autor(datosAutor);
     }
 
+    public String obtenerPrimerIdioma(DatosLibros datosLibros){
+        String idioma = datosLibros.idiomas().toString();
+        return idioma;
+    }
+
     @Override
     public String toString(){
         return
                 "Titulo = " + titulo + "\'" +
                         ", Autor =" + nombreAutor +
                         ", Idiomas =" + idiomas+
-                        ", Numero de descargas= " + numeroDeDescargas
+                        " , Numero de descargas= " + numeroDeDescargas
                 ;
     }
 }

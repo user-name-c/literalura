@@ -20,6 +20,7 @@ public class Principal {
     private LibroRepository libroRepository;
     private AutorRepository autorRepository;
     List<Autor> autores;
+    List<Libro> libros;
     Scanner teclado = new Scanner(System.in);
 
     public Principal(LibroRepository libroRepository, AutorRepository autorRepository) {
@@ -46,7 +47,7 @@ public class Principal {
                     mostrarAutoresPorAnio();
                     break;
                 case 5:
-                    System.out.println("Opcion aun no implementada");
+                    listarLibrosPorIdioma();
                     break;
                 case 0:
                     System.out.println("Finalizando el programa");
@@ -69,6 +70,16 @@ public class Principal {
                 5- listar libros por idioma
                     
                 0- Salir
+                """);
+    }
+
+    public void muestraMenuIdionas(){
+        System.out.println("""
+                Ingrese el idioma para buscar los libros:
+                en- ingls
+                es- español
+                fr- frances
+                pt- portugués
                 """);
     }
 
@@ -116,12 +127,10 @@ public class Principal {
     // listar autores buscados
     private void mostrarLibrosBuscados() {
         //Aqui se consulta nuestra base de datos postreSql
-        List<Libro> libros = libroRepository.findAll();
+        libros = libroRepository.findAll();
 
         //imprimia las series guardadas en la lista series
-        libros.stream()
-                .sorted(Comparator.comparing(Libro::getNombreAutor))
-                .forEach(System.out::println);
+        imprimeLibrosOrdenadosPorNombre(libros);
     }
 
 
@@ -153,6 +162,34 @@ public class Principal {
         autores.stream()
                 .sorted(Comparator.comparing(Autor::getNombre))
                 .forEach(System.out::println);
+    }
+
+    private void imprimeLibrosOrdenadosPorNombre(List<Libro> libros) {
+        libros.stream()
+                .sorted(Comparator.comparing(Libro::getNombreAutor))
+                .forEach(System.out::println);
+    }
+
+    private void listarLibrosPorIdioma(){
+        muestraMenuIdionas();
+        String idioma = teclado.nextLine();
+
+        String claveIdioma;
+        if (idioma.length() >= 2) {
+            claveIdioma = idioma.substring(0, 2);
+        } else {
+            // Manejar el caso donde el usuario no ingrese suficientes caracteres
+            claveIdioma = idioma; // o manejar el error como prefieras
+        }
+
+        libros = libroRepository.findByIdiomasContains(claveIdioma);
+
+        if (libros.isEmpty()) {
+            System.out.println("No se encontraron libros en ese idioma");
+        } else {
+            imprimeLibrosOrdenadosPorNombre(libros);
+        }
+
     }
 
 }
