@@ -89,7 +89,8 @@ public class Principal {
 
         String busqueda = "?search=" + libroUsuario.replace(" ","+");
         var json = consulta.obtenerDatos(URL_BASE + busqueda);
-//        System.out.println(json);
+        System.out.println(json);
+        //
         var datos = conversor.obtenerDatos(json, Datos.class);
 
         DatosLibros datoslibro = datos.resultados().get(0);
@@ -101,17 +102,22 @@ public class Principal {
     }
 
     private void guardarLibroConAutor(Libro libro, Autor autor){
-        //buscar autores en vase de datos por nombre
-        Optional<Autor> autorBuscado = autorRepository.findByNombreContains(autor.getNombre());
+       //validamos si el autor es nulo
+        if(autor.getNombre() == null){
+            System.out.println("El autor es nulo");
+        } else{
+            //buscar autores en vase de datos por nombre
+            Optional<Autor> autorBuscado = autorRepository.findByNombreContains(autor.getNombre());
 
-        //guarda el autor si no existe
-        if(autorBuscado.isPresent()){
-            System.out.println("El autor ya existe");
-            libro.setAutor(autorBuscado.get());
-        } else {
-            System.out.println("Nuevo autor");
-            autorRepository.save(autor);
-            libro.setAutor(autor);
+            //guarda el autor si no existe
+            if(autorBuscado.isPresent()){
+                System.out.println("El autor ya existe");
+                libro.setAutor(autorBuscado.get());
+            } else {
+                System.out.println("Nuevo autor");
+                autorRepository.save(autor);
+                libro.setAutor(autor);
+            }
         }
 
         //guarda el libro
@@ -166,7 +172,7 @@ public class Principal {
 
     private void imprimeLibrosOrdenadosPorNombre(List<Libro> libros) {
         libros.stream()
-                .sorted(Comparator.comparing(Libro::getNombreAutor))
+                .sorted(Comparator.comparing(Libro::getNombreAutor,Comparator.nullsFirst(String::compareTo)))
                 .forEach(System.out::println);
     }
 

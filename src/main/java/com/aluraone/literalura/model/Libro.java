@@ -27,7 +27,7 @@ public class Libro {
 
     public Libro(DatosLibros datosLibros) {
         this.titulo = datosLibros.titulo();
-        this.nombreAutor = obtenerPrimerAutor(datosLibros).getNombre();
+        this.nombreAutor = (obtenerPrimerAutor(datosLibros) == null ? null : autor.getNombre());
         this.idiomas = obtenerPrimerIdioma(datosLibros);
         this.numeroDeDescargas = datosLibros.numeroDeDescargas();
     }
@@ -85,9 +85,14 @@ public class Libro {
 
     //metodos
     public Autor obtenerPrimerAutor(DatosLibros datosLibro){
-        DatosAutor datosAutor = datosLibro.autor().get(0);
-        return new Autor(datosAutor);
+        if (datosLibro.autor().isEmpty()) {
+            return null;
+        } else {
+            DatosAutor datosAutor = datosLibro.autor().get(0);
+            return new Autor(datosAutor);
+        }
     }
+
 
     public String obtenerPrimerIdioma(DatosLibros datosLibros){
         String idioma = datosLibros.idiomas().toString();

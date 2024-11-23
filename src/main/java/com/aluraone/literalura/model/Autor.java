@@ -72,8 +72,12 @@ public class Autor {
     }
 
     public Autor obtenerPrimerAutor(DatosLibros datosLibro){
-        DatosAutor datosAutor = datosLibro.autor().get(0);
-        return new Autor(datosAutor);
+        if (!datosLibro.autor().isEmpty()) {
+            DatosAutor datosAutor = datosLibro.autor().get(0);
+            return new Autor(datosAutor);
+        } else {
+            return new Autor();
+        }
     }
 
     @Override
